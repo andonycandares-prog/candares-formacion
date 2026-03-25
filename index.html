@@ -756,6 +756,49 @@
     .module-card.completed .progress-badge {
       display: none; /* replaced by completed-check circle */
     }
+
+    /* ─── MODAL NAV ARROWS ─── */
+    .modal-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-nav-btn {
+      background: var(--sky);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--blue-mid);
+      transition: background 0.18s, border-color 0.18s, opacity 0.18s;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+
+    .modal-nav-btn:hover:not(:disabled) {
+      background: #d0e8ff;
+      border-color: var(--blue-light);
+    }
+
+    .modal-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .modal-nav-btn svg { width: 14px; height: 14px; }
+
+    .modal-nav-counter {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 500;
+      min-width: 42px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -874,11 +917,26 @@
   <div class="modal-box">
     <div class="modal-header">
       <span class="modal-title" id="modalTitle"></span>
-      <button class="modal-close" onclick="closeVideo()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="modal-nav">
+          <button class="modal-nav-btn" id="btnPrev" onclick="navigateModule(-1)" title="Módulo anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <span class="modal-nav-counter" id="navCounter"></span>
+          <button class="modal-nav-btn" id="btnNext" onclick="navigateModule(1)" title="Módulo siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        <button class="modal-close" onclick="closeVideo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
     <div class="modal-body-scroll">
       <div class="modal-video">
@@ -1030,6 +1088,7 @@
 
     currentModuleId = id;
     document.getElementById('modalTitle').textContent = link.title;
+    updateNavUI();
     document.getElementById('videoFrame').src = embed;
 
     const resDiv = document.getElementById('modalResources');
@@ -1076,11 +1135,34 @@
     currentModuleId = null;
   }
 
+  function navigateModule(dir) {
+    if (currentModuleId === null) return;
+    const ids = modules.map(m => m.id);
+    const idx = ids.indexOf(currentModuleId);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= ids.length) return;
+    openVideo(ids[newIdx]);
+  }
+
+  function updateNavUI() {
+    if (currentModuleId === null) return;
+    const ids = modules.map(m => m.id);
+    const idx = ids.indexOf(currentModuleId);
+    const total = ids.length;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('navCounter').textContent = (idx + 1) + ' / ' + total;
+  }
+
   function closeVideoIfOutside(e) {
     if (e.target === document.getElementById('videoModal')) closeVideo();
   }
 
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeVideo();
+    if (e.key === 'ArrowRight' && currentModuleId !== null) navigateModule(1);
+    if (e.key === 'ArrowLeft'  && currentModuleId !== null) navigateModule(-1);
+  });
 
   // Init progress on load
   updateProgressUI();
