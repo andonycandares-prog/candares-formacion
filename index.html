@@ -292,10 +292,20 @@
       background: linear-gradient(90deg, var(--blue-deep), var(--blue-light));
     }
 
+    .module-card {
+      cursor: pointer;
+    }
+
     .module-card:hover {
       box-shadow: var(--shadow-md);
-      transform: translateY(-3px);
-      border-color: rgba(11,79,156,0.16);
+      transform: translateY(-4px);
+      border-color: rgba(11,79,156,0.28);
+      outline: 2px solid rgba(11,79,156,0.10);
+    }
+
+    .module-card:active {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
     }
 
     .mod-tag {
@@ -357,13 +367,17 @@
       font-size: 0.83rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.15s, opacity 0.15s;
       font-family: inherit;
+      pointer-events: none; /* card handles the click */
     }
 
-    .btn-video:hover {
+    .module-card:hover .btn-video {
       background: var(--blue-deep);
-      transform: translateY(-1px);
+    }
+
+    .module-card:active .btn-video {
+      opacity: 0.85;
     }
 
     .btn-video svg { width: 14px; height: 14px; flex-shrink: 0; }
@@ -497,13 +511,250 @@
     }
 
     @media (max-width: 860px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-right { display: none; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        padding: 48px 0 40px;
+        gap: 28px;
+      }
+      .hero-right { display: block; }
       .hero { min-height: auto; }
+      .journey-card { padding: 20px 18px; }
+      /* Compact roadmap on mobile: horizontal pills */
+      .journey-steps {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .journey-step::after { display: none; }
+      .journey-icon { margin-bottom: 0; }
+      .journey-text { padding-bottom: 0; padding-top: 4px; }
+      .journey-step-desc { display: none; }
+      .journey-step {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 12px 10px;
+        gap: 10px;
+        align-items: center;
+      }
+      .journey-step-title { font-size: 0.82rem; }
     }
 
     @media (max-width: 640px) {
-      .hero-inner { padding: 52px 0 48px; }
+      .hero-inner { padding: 40px 0 36px; }
+      .hero h1 { font-size: 1.9rem; }
+      .journey-steps { grid-template-columns: 1fr 1fr; }
+      .modal-box { border-radius: 14px; }
+    }
+
+    /* ─── PROGRESS ─── */
+    .module-card.completed::before {
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+    }
+
+    .progress-badge {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #16a34a;
+      color: white;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .module-card.completed .progress-badge { display: block; }
+
+    .progress-bar-wrap {
+      background: var(--sky);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .progress-bar-track {
+      flex: 1;
+      height: 7px;
+      background: rgba(11,79,156,0.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-mid), #22c55e);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .progress-reset {
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+      padding: 0;
+      white-space: nowrap;
+    }
+
+    .progress-reset:hover { color: var(--blue-mid); }
+
+    /* ─── MODAL SCROLL (mobile friendly) ─── */
+    .modal-box {
+      display: flex;
+      flex-direction: column;
+      max-height: 92vh;
+      overflow: hidden;
+    }
+
+    .modal-body-scroll {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* mark as watched button */
+    .btn-watched {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+
+    .btn-watched:hover { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+    .btn-watched.done { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+    .btn-watched svg { width: 13px; height: 13px; }
+
+    .modal-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-footer-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ─── CARD ENTRANCE ANIMATION ─── */
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .module-card {
+      opacity: 0;
+      animation: cardIn 0.45s ease forwards;
+    }
+
+    /* ─── COMPLETED STATE ─── */
+    .module-card.completed {
+      background: linear-gradient(160deg, #f0fdf4 0%, #ffffff 60%);
+      border-color: rgba(22,163,74,0.22);
+    }
+
+    .module-card.completed::before {
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+    }
+
+    .module-card.completed:hover {
+      border-color: rgba(22,163,74,0.38);
+      box-shadow: 0 8px 32px rgba(22,163,74,0.13);
+    }
+
+    .module-card.completed .mod-tag {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .module-card.completed .mod-num {
+      background: #16a34a;
+    }
+
+    .module-card.completed h3 {
+      color: #14532d;
+    }
+
+    .module-card.completed p {
+      color: #4ade80;
+      color: #166534;
+      opacity: 0.75;
+    }
+
+    .module-card.completed .btn-video {
+      background: #16a34a;
+    }
+
+    .module-card.completed:hover .btn-video {
+      background: #15803d;
+    }
+
+    .completed-check {
+      display: none;
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      background: #16a34a;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(22,163,74,0.30);
+    }
+
+    .completed-check svg {
+      width: 18px;
+      height: 18px;
+      color: white;
+      stroke: white;
+    }
+
+    .module-card.completed .completed-check {
+      display: flex;
+    }
+
+    .module-card.completed .progress-badge {
+      display: none; /* replaced by completed-check circle */
     }
   </style>
 </head>
@@ -607,6 +858,13 @@
     <div class="section-label">Ruta de aprendizaje</div>
     <h2 class="section-title">Módulos del Programa</h2>
     <p class="section-sub">Selecciona un módulo para ver el video y acceder al material complementario.</p>
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <span class="progress-label" id="progressLabel">0 de 9 vistos</span>
+      <button class="progress-reset" onclick="resetProgress()">Reiniciar</button>
+    </div>
     <div class="modules-grid" id="modulesGrid"></div>
   </div>
 </main>
@@ -622,10 +880,21 @@
         </svg>
       </button>
     </div>
-    <div class="modal-video">
-      <iframe id="videoFrame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <div class="modal-body-scroll">
+      <div class="modal-video">
+        <iframe id="videoFrame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+      <div class="modal-resources" id="modalResources" style="display:none"></div>
     </div>
-    <div class="modal-resources" id="modalResources" style="display:none"></div>
+    <div class="modal-footer">
+      <span class="modal-footer-label" id="modalFooterLabel"></span>
+      <button class="btn-watched" id="btnWatched" onclick="toggleWatched()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        Marcar como visto
+      </button>
+    </div>
   </div>
 </div>
 
@@ -651,6 +920,12 @@
     const card = document.createElement('div');
     card.className = 'module-card';
     card.innerHTML = `
+      <div class="progress-badge">✓ Visto</div>
+      <div class="completed-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
       <div class="mod-tag">
         <span class="mod-num">${m.id}</span>
         Módulo ${m.id}
@@ -664,8 +939,78 @@
         </button>
       </div>
     `;
+    card.id = 'card-' + m.id;
+    card.style.cursor = 'pointer';
+    card.style.animationDelay = (m.id * 0.07) + 's';
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.btn-video')) return;
+      openVideo(m.id);
+    });
     grid.appendChild(card);
   });
+
+  // ── Progress tracking ──────────────────────────────────────────────────
+  let currentModuleId = null;
+
+  function getWatched() {
+    try { return JSON.parse(localStorage.getItem('candares_watched') || '[]'); }
+    catch(e) { return []; }
+  }
+
+  function saveWatched(arr) {
+    try { localStorage.setItem('candares_watched', JSON.stringify(arr)); } catch(e) {}
+  }
+
+  function updateProgressUI() {
+    const watched = getWatched();
+    const total = modules.length;
+    const count = watched.length;
+    const pct = Math.round((count / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = count + ' de ' + total + ' vistos';
+    modules.forEach(m => {
+      const card = document.getElementById('card-' + m.id);
+      if (!card) return;
+      if (watched.includes(m.id)) card.classList.add('completed');
+      else card.classList.remove('completed');
+    });
+  }
+
+  function resetProgress() {
+    if (!confirm('¿Reiniciar el progreso? Se borrarán todos los módulos marcados como vistos.')) return;
+    saveWatched([]);
+    updateProgressUI();
+  }
+
+  function toggleWatched() {
+    if (currentModuleId === null) return;
+    const watched = getWatched();
+    const idx = watched.indexOf(currentModuleId);
+    if (idx === -1) watched.push(currentModuleId);
+    else watched.splice(idx, 1);
+    saveWatched(watched);
+    updateProgressUI();
+    updateWatchedButton();
+  }
+
+  function updateWatchedButton() {
+    if (currentModuleId === null) return;
+    const watched = getWatched();
+    const btn = document.getElementById('btnWatched');
+    const lbl = document.getElementById('modalFooterLabel');
+    if (watched.includes(currentModuleId)) {
+      btn.classList.add('done');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg> Visto ✓`;
+      lbl.textContent = '¡Módulo completado!';
+    } else {
+      btn.classList.remove('done');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg> Marcar como visto`;
+      lbl.textContent = 'Márcalo al terminar de ver el video';
+    }
+  }
+
+  // Add id to each card for progress tracking
+  // (done below after forEach)
 
   function getEmbedUrl(url) {
     if (!url) return '';
@@ -683,6 +1028,7 @@
     const embed = getEmbedUrl(link.url);
     if (!embed) { alert('Link de YouTube no válido.'); return; }
 
+    currentModuleId = id;
     document.getElementById('modalTitle').textContent = link.title;
     document.getElementById('videoFrame').src = embed;
 
@@ -718,6 +1064,7 @@
       `;
     }
 
+    updateWatchedButton();
     document.getElementById('videoModal').classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -726,6 +1073,7 @@
     document.getElementById('videoModal').classList.remove('active');
     document.getElementById('videoFrame').src = '';
     document.body.style.overflow = '';
+    currentModuleId = null;
   }
 
   function closeVideoIfOutside(e) {
@@ -733,6 +1081,9 @@
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
+
+  // Init progress on load
+  updateProgressUI();
 </script>
 </body>
 </html>
